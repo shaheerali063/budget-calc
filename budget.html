@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Budget Manager</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <div class="container">
+      <h1>Budget Manager</h1>
+      <label for="netIncome">Net Income:</label>
+      <input
+        type="number"
+        id="netIncome"
+        placeholder="Enter your net income"
+        oninput="calculateBudget()"
+      />
+      <button id="downloadCSV">Download CSV</button>
+      <input
+        type="file"
+        id="csvFileInput"
+        accept=".csv"
+        style="display: none"
+      />
+      <button onclick="document.getElementById('csvFileInput').click();">
+        Upload CSV
+      </button>
+
+      <div class="budget-section">
+        <h2>Allocated Budgets</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th>Allocated %</th>
+              <th>Allocated Amount</th>
+              <th>Expense</th>
+              <th>Spent Amount</th>
+              <th>Spent %</th>
+              <th>Budget Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Charity</td>
+              <td>5%</td>
+              <td id="charityAllocated"></td>
+              <td>
+                <input
+                  type="number"
+                  id="charity"
+                  placeholder="Enter charity expense"
+                  oninput="updateBudget('charity', 5)"
+                />
+              </td>
+              <td id="charitySpentAmount"></td>
+              <td id="charitySpentPercent"></td>
+              <td id="charityResult"></td>
+            </tr>
+            <tr>
+              <td>Family</td>
+              <td>5%</td>
+              <td id="familyAllocated"></td>
+              <td>
+                <input
+                  type="number"
+                  id="family"
+                  placeholder="Enter family expense"
+                  oninput="updateBudget('family', 5)"
+                />
+              </td>
+              <td id="familySpentAmount"></td>
+              <td id="familySpentPercent"></td>
+              <td id="familyResult"></td>
+            </tr>
+            <tr>
+              <td>Utilities</td>
+              <td>17%</td>
+              <td id="utilitiesAllocated"></td>
+              <td>
+                <input
+                  type="number"
+                  id="utilities"
+                  placeholder="Enter utilities expense"
+                  oninput="updateBudget('utilities', 17)"
+                />
+              </td>
+              <td id="utilitiesSpentAmount"></td>
+              <td id="utilitiesSpentPercent"></td>
+              <td id="utilitiesResult"></td>
+            </tr>
+            <tr>
+              <td>Commute</td>
+              <td>7%</td>
+              <td id="commuteAllocated"></td>
+              <td>
+                <input
+                  type="number"
+                  id="commute"
+                  placeholder="Enter commute expense"
+                  oninput="updateBudget('commute', 7)"
+                />
+              </td>
+              <td id="commuteSpentAmount"></td>
+              <td id="commuteSpentPercent"></td>
+              <td id="commuteResult"></td>
+            </tr>
+            <tr>
+              <td>Investments</td>
+              <td>20%</td>
+              <td id="investmentsAllocated"></td>
+              <td>
+                <input
+                  type="number"
+                  id="investments"
+                  placeholder="Enter investments expense"
+                  oninput="updateBudget('investments', 20)"
+                />
+              </td>
+              <td id="investmentsSpentAmount"></td>
+              <td id="investmentsSpentPercent"></td>
+              <td id="investmentsResult"></td>
+            </tr>
+            <tr>
+              <td>Savings</td>
+              <td>20%</td>
+              <td id="savingsAllocated"></td>
+              <td>
+                <input
+                  type="number"
+                  id="savings"
+                  placeholder="Enter savings expense"
+                  oninput="updateBudget('savings', 20)"
+                />
+              </td>
+              <td id="savingsSpentAmount"></td>
+              <td id="savingsSpentPercent"></td>
+              <td id="savingsResult"></td>
+            </tr>
+            <tr>
+              <td>Personal</td>
+              <td>26%</td>
+              <td id="personalAllocated"></td>
+              <td>
+                <input
+                  type="number"
+                  id="personal"
+                  placeholder="Enter personal expense"
+                  oninput="updateBudget('personal', 26)"
+                />
+              </td>
+              <td id="personalSpentAmount"></td>
+              <td id="personalSpentPercent"></td>
+              <td id="personalResult"></td>
+            </tr>
+          </tbody>
+          <tfoot id="totalsRow">
+            <tr>
+              <td>Totals</td>
+              <td id="totalAllocatedPercent"></td>
+              <td id="totalAllocatedAmount"></td>
+              <td></td>
+              <td id="totalSpentAmount"></td>
+              <td id="totalSpentPercent"></td>
+              <td></td>
+              <!-- Leave the "Budget Status" cell empty in the totals row -->
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
