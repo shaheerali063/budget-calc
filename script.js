@@ -52,30 +52,18 @@ function calculateTotals() {
   let totalSpentAmount = 0;
   let totalSpentPercentage = 0; // Initialize total spent percentage
 
-  const categories = [
-    "charity",
-    "family",
-    "utilities",
-    "commute",
-    "investments",
-    "savings",
-    "personal",
-  ];
+  // Get all category rows in the table
+  const categoryRows = document.querySelectorAll("table tbody tr");
 
-  categories.forEach((category) => {
-    const allocatedAmountText = document.getElementById(
-      `${category}Allocated`
-    ).textContent;
-    const spentAmountText = document.getElementById(
-      `${category}SpentAmount`
-    ).textContent;
-    const spentPercentText = document.getElementById(
-      `${category}SpentPercent`
-    ).textContent; // Get spent percentage text
+  categoryRows.forEach((row) => {
+    const categoryId = row.querySelector("td:first-child").textContent.trim();
+    const allocatedAmountText = row.querySelector("td:nth-child(3)").textContent;
+    const spentAmountText = row.querySelector("td:nth-child(4) input").value;
+    const spentPercentText = row.querySelector("td:nth-child(6)").textContent;
 
     const allocatedAmount = parseFloat(allocatedAmountText.replace(",", ""));
     const spentAmount = parseFloat(spentAmountText.replace(",", ""));
-    const spentPercent = parseFloat(spentPercentText.replace("%", "")); // Parse spent percentage
+    const spentPercent = parseFloat(spentPercentText.replace("%", ""));
 
     if (!isNaN(allocatedAmount)) {
       totalAllocatedAmount += allocatedAmount;
@@ -86,18 +74,16 @@ function calculateTotals() {
     }
 
     if (!isNaN(spentPercent)) {
-      // Update total spent percentage
       totalSpentPercentage += spentPercent;
     }
   });
 
-  document.getElementById("totalAllocatedAmount").textContent =
-    totalAllocatedAmount.toFixed(2);
-  document.getElementById("totalSpentAmount").textContent =
-    totalSpentAmount.toFixed(2);
-  document.getElementById("totalSpentPercent").textContent =
-    totalSpentPercentage.toFixed(2) + "%"; // Update total spent percentage
+  // Update the total amounts in the table footer
+  document.getElementById("totalAllocatedAmount").textContent = totalAllocatedAmount.toFixed(2);
+  document.getElementById("totalSpentAmount").textContent = totalSpentAmount.toFixed(2);
+  document.getElementById("totalSpentPercent").textContent = totalSpentPercentage.toFixed(2) + "%";
 }
+
 
 // Call calculateTotals whenever there's a change in any input field
 document.querySelectorAll('input[type="number"]').forEach((input) => {
@@ -161,28 +147,37 @@ function populateTableFromCSV(csvData) {
   tableBody.innerHTML = "";
 
   // Populate table rows with CSV data
-  for (let i = 3; i < rows.length; i++) {
+  for (let i = 4; i < rows.length; i++) {
     // Start from the third row to skip Net Income and Total Expenses rows
     const rowData = rows[i].split(",");
-    const category = rowData[0].trim();
-    const allocatedPercent = rowData[1].trim();
-    const allocatedAmount = rowData[2].trim();
-    const spentAmount = rowData[4].trim();
-    const spentPercent = rowData[5].trim();
-    const budgetStatus = rowData[6].trim();
+    const category = rowData[0]?.trim();
+    if (category == "Totals") {
+      break;
+    }
+
+    const allocatedPercent = parseFloat(rowData[1]?.split("%")[0]?.trim());
+    // const allocatedAmount = rowData[2].trim();
+    const spentAmount = parseFloat(rowData[3]?.trim());
+    // const spentPercent = rowData[5].trim();
+    // const budgetStatus = rowData[6].trim();
 
     const newRow = document.createElement("tr");
+    const netIncome = document.getElementById("netIncome").value;
+    const allocatedAmount = (parseFloat(netIncome) * allocatedPercent) / 100;
+
     newRow.innerHTML = `
       <td>${category}</td>
-      <td>${allocatedPercent}</td>
-      <td>${allocatedAmount}</td>
-      <td><input type="number" value="${spentAmount}" oninput="updateBudget('${category}', ${allocatedPercent})"></td>
-      <td>${spentAmount}</td>
-      <td>${spentPercent}</td>
-      <td class="${budgetStatus.toLowerCase()}">${budgetStatus}</td>
-  `;
+      <td>${allocatedPercent}%</td>
+      <td id="${category.toLowerCase()}Allocated">${allocatedAmount.toFixed(2)}</td>
+      <td><input type="number" id="${category.toLowerCase()}" value="${spentAmount}" placeholder="Enter ${category.toLowerCase()} expense" oninput="updateBudget('${category.toLowerCase()}', ${allocatedPercent})"></td>
+      <td id="${category.toLowerCase()}SpentAmount"></td>
+      <td id="${category.toLowerCase()}SpentPercent"></td>
+      <td id="${category.toLowerCase()}Result"></td>
+    `;
     tableBody.appendChild(newRow);
+    updateBudget(category.toLowerCase(), allocatedPercent);
   }
+  calculateTotals();
 }
 
 document
@@ -192,14 +187,12 @@ document
     const reader = new FileReader();
 
     reader.onload = function (e) {
-      console.log(e.target.result);
       const data = new Uint8Array(e.target.result);
       const workbook = XLSX.read(data, { type: "array" });
-      console.log(workbook);
       const sheet = workbook.Sheets[workbook.SheetNames[0]];
       const csvData = XLSX.utils.sheet_to_csv(sheet);
       console.log(csvData);
-      // populateTableFromCSV(csvData);
+      populateTableFromCSV(csvData);
     };
 
     reader.readAsArrayBuffer(file);
