@@ -86,9 +86,16 @@ function calculateTotals() {
 
 
 // Call calculateTotals whenever there's a change in any input field
-document.querySelectorAll('input[type="number"]').forEach((input) => {
-  input.addEventListener("input", calculateTotals);
-});
+function attachInputListeners() {
+  document.querySelectorAll('input[type="number"]').forEach((input) => {
+    input.addEventListener("input", calculateTotals);
+  });
+}
+
+window.onload = function() {
+  calculateBudget();
+  attachInputListeners(); // Attach listeners when the page loads
+}
 
 // Call calculateBudget when the page loads initially
 function downloadCSV() {
@@ -177,6 +184,7 @@ function populateTableFromCSV(csvData) {
     tableBody.appendChild(newRow);
     updateBudget(category.toLowerCase(), allocatedPercent);
   }
+  attachInputListeners();
   calculateTotals();
 }
 
